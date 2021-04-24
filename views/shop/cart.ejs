@@ -3,6 +3,30 @@
 <body>
 	
 <%- include('../partials/navigation.ejs') %>
-<h1>Cart</h1>
+	<main >
+		<% if (cart.length > 0) {%>
+		<h1>Cart</h1>
+		<hr>
+		<ul>
+			<% cart.forEach(product => { %>
+			<li>Title - <%= product.title %>  ||  Quantity - <%= product.qty %> </li>
+			<form action="/delete-cart-item" method="POST">
+				<input type="hidden" value="<%= product.id %>" name="id">
+				<button type="submit" class="btn">
+					Delete
+				</button>
+			</form>
+			<% }) %>
+		</ul>
+		<h5>
+			<%= cart.totalPrice %>
+		</h5>
+		<% }else { %>
+		<h1>
+			No Products in the cart
+		</h1>
+		<% } %>
+	</main>
+
 
 <%- include('../partials/end.ejs') %>

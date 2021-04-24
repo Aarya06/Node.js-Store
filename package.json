@@ -27,6 +27,6 @@
     "express": "^4.17.1"
   },
 	"nodemonConfig": {
-    "ignore": ["products.json"]
+    "ignore": ["./data/*.json"]
   }
 }
