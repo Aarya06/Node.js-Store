@@ -1,32 +1,32 @@
-<%- include('../partials/head.ejs') %>
-</head>
-<body>
-	
-<%- include('../partials/navigation.ejs') %>
-	<main >
-		<% if (cart.length > 0) {%>
-		<h1>Cart</h1>
-		<hr>
-		<ul>
-			<% cart.forEach(product => { %>
-			<li>Title - <%= product.title %>  ||  Quantity - <%= product.qty %> </li>
-			<form action="/delete-cart-item" method="POST">
-				<input type="hidden" value="<%= product.id %>" name="id">
-				<button type="submit" class="btn">
-					Delete
-				</button>
-			</form>
-			<% }) %>
-		</ul>
-		<h5>
-			<%= cart.totalPrice %>
-		</h5>
-		<% }else { %>
-		<h1>
-			No Products in the cart
-		</h1>
-		<% } %>
-	</main>
+ <%- include('../partials/head.ejs') %>
+    <link rel="stylesheet" href="/css/cart.css">
+    </head>
 
-
-<%- include('../partials/end.ejs') %>
+    <body>
+        <%- include('../partials/navigation.ejs') %>
+        <main>
+            <% if (cart.length > 0) { %>
+                <ul class="cart__item-list">
+                    <% cart.forEach(product => { %>
+                        <li class="cart__item">
+                            <h1><%= product.title %></h1>
+                            <h2>Quantity: <%= product.qty %></h2>
+                            <form action="/cart-delete-item" method="POST">
+                                <input type="hidden" value="<%= product._id %>" name="id">
+                                <button class="btn danger" type="submit">Delete</button>
+                            </form>
+                        </li>
+                    <% }) %>
+                </ul>
+                <hr>
+                <div class="centered">
+                    <form action="/orders" method="POST">
+                        <button type="submit" class="btn">Order Now!</button>
+                    </form>
+                </div>
+                
+            <% } else { %>
+                <h1>No Products in Cart!</h1>
+            <% } %>
+        </main>
+        <%- include('../partials/end.ejs') %>
