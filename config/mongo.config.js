@@ -1,27 +1,24 @@
-const mongodb = require('mongodb');
-const MongoClient = mongodb.MongoClient;
+const mongoose = require('mongoose');
+const User = require('../models/user');
+const { mongoUri } = require('./env.config');
 
-let _db;
+mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+}).then(result => {
+    console.log('Connected To Database')
+    User.findOne().then(user => {
+        if (!user) {
+            User.create({
+                name: 'Rajnish Aarya',
+                email: 'raj.aarya@gmail.com',
+                cart: {
+                    items: []
+                }
+            })
+        }
+    })
+})
 
-const mongoConnect = (mongoUri, cb) => {
-    MongoClient.connect(mongoUri, { useUnifiedTopology: true }).
-        then(client => {
-            console.log('Connected To DB')
-            _db = client.db();
-            cb();
-        }).
-        catch(err => {
-            console.log(err)
-            throw err
-        })
-}
-
-const getDb = () => {
-    if(_db){
-        return _db
-    }
-    throw 'No Db found'
-}
-
-exports.mongoConnect = mongoConnect;
-exports.getDb = getDb;
+module.exports = mongoose.connection

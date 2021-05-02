@@ -12,9 +12,9 @@ router
 	.route('/products')
 	.get(adminController.getProducts)
 
-router.route('/edit-product').post(adminController.postEditProduct)
-
 router.route('/edit-product/:id').get(adminController.getEditProduct)
+
+router.route('/edit-product').post(adminController.postEditProduct)
 
 router.route('/delete-product').post(adminController.deleteProduct)
 

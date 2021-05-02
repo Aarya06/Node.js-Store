@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
 
-const { port, mongoUri } = require('./config/env.config');
-const {mongoConnect} = require('./config/mongo.config');
+const { port } = require('./config/env.config');
+const mongoConnect = require('./config/mongo.config');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -19,8 +19,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-	User.findById('608d4501de25090978c7b476').then(user => {
-		req.user = new User(user)
+	User.findOne().then(user => {
+		req.user = user
 		next();
 	}).catch(err => {
 		console.log(err);
@@ -33,8 +33,10 @@ app.use(shopRoutes);
 
 app.use(errorsController.get404Page);
 
-mongoConnect(mongoUri, () => {
-	app.listen(port, () => {
-		console.log(`server is listening at port ${port}`);
-	});
+mongoConnect.on('error', err => {
+	console.log('error connecting to Database', err)
+});
+
+app.listen(port, () => {
+	console.log(`server is listening at port ${port}`);
 });
