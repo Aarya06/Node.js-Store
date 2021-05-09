@@ -6,6 +6,7 @@
     <%- include('../partials/navigation.ejs') %>
 
     <main>
+        <%- include('../partials/flash-messages.ejs') %>
 		<% if(hasProduct){ %>
 			<div class="grid">
 				<% products.forEach(product => { %>

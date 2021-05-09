@@ -2,20 +2,21 @@ const express = require('express');
 const router = express.Router();
 
 const adminController = require('../controllers/admin');
+const isAuthenticated = require('../middleware/isAuthenticated');
 
 router
 	.route('/add-product')
-	.get(adminController.getAddProduct)
-	.post(adminController.postAddProduct);
+	.get(isAuthenticated, adminController.getAddProduct)
+	.post(isAuthenticated, adminController.postAddProduct);
 
 router
 	.route('/products')
-	.get(adminController.getProducts)
+	.get(isAuthenticated, adminController.getProducts)
 
-router.route('/edit-product/:id').get(adminController.getEditProduct)
+router.route('/edit-product/:id').get(isAuthenticated, adminController.getEditProduct)
 
-router.route('/edit-product').post(adminController.postEditProduct)
+router.route('/edit-product').post(isAuthenticated, adminController.postEditProduct)
 
-router.route('/delete-product').post(adminController.deleteProduct)
+router.route('/delete-product').post(isAuthenticated, adminController.deleteProduct)
 
 module.exports = router;

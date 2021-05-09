@@ -8,17 +8,6 @@ mongoose.connect(mongoUri, {
     useFindAndModify: false
 }).then(result => {
     console.log('Connected To Database')
-    User.findOne().then(user => {
-        if (!user) {
-            User.create({
-                name: 'Rajnish Aarya',
-                email: 'raj.aarya@gmail.com',
-                cart: {
-                    items: []
-                }
-            })
-        }
-    })
 })
 
 module.exports = mongoose.connection
