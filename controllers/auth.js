@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const { signupMail } = require('../config/nodemailer.config');
 
 exports.getLoginForm = (req, res, next) => {
     res.status(200).render('auth/login', {
@@ -61,6 +62,9 @@ exports.postSignUp = (req, res, next) => {
                 .then(newUser => {
                     req.flash('success', 'Successfully signed up')
                     res.redirect('/login')
+                    return signupMail(email)
+                }).catch(err => {
+                    console.log(err)
                 })
         })
     }

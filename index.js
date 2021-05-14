@@ -5,7 +5,7 @@ const mongoStore = require('connect-mongodb-session')(session)
 const csrf = require('csurf');
 const flash = require('connect-flash');
 
-const { port, sessionUri } = require('./config/env.config');
+const { PORT, SESSION_URI } = require('./config/env.config');
 const mongoConnect = require('./config/mongo.config');
 
 const adminRoutes = require('./routes/admin');
@@ -17,7 +17,7 @@ const User = require('./models/user');
 const app = express();
 const csrfProtection = csrf()
 const store = new mongoStore({
-	uri: sessionUri,
+	uri: SESSION_URI,
 	collection: 'sessions'
 })
 
@@ -67,6 +67,6 @@ mongoConnect.on('error', err => {
 	console.log('error connecting to Database', err)
 });
 
-app.listen(port, () => {
-	console.log(`server is listening at port ${port}`);
+app.listen(PORT, () => {
+	console.log(`server is listening at port ${PORT}`);
 });
