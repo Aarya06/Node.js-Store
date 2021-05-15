@@ -67,6 +67,6 @@ mongoConnect.on('error', err => {
 	console.log('error connecting to Database', err)
 });
 
-app.listen(PORT, () => {
+app.listen(PORT || 3000, () => {
 	console.log(`server is listening at port ${PORT}`);
 });

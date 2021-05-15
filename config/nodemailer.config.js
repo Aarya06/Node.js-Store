@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
-const { SEND_GRID_API_KEY, SEND_GRID_EMAIL } = require('./env.config');
+const { SEND_GRID_API_KEY } = require('./env.config');
 
 const transporter = nodemailer.createTransport(sendGridTransport({
     auth: {
@@ -8,14 +8,4 @@ const transporter = nodemailer.createTransport(sendGridTransport({
     }
 }))
 
-const signupMail = (email)  => transporter.sendMail({
-    to: email,
-    from: SEND_GRID_EMAIL,
-    subject: 'Sign Up',
-    html: '<h1>welcome to bookStore</h1>'
-})
-
-module.exports = {
-    transporter,
-    signupMail
-};
+module.exports = transporter;

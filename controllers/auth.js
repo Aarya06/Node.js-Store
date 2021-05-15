@@ -1,6 +1,8 @@
-const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const { signupMail } = require('../config/nodemailer.config');
+const crypto = require('crypto');
+
+const User = require('../models/user');
+const { signupMail, resetMail } = require('../utils/sendMails');
 
 exports.getLoginForm = (req, res, next) => {
     res.status(200).render('auth/login', {
@@ -73,9 +75,77 @@ exports.postSignUp = (req, res, next) => {
     })
 }
 
+exports.getResetPassword = (req, res, next) => {
+    res.status(200).render('auth/reset', {
+        title: 'Reset',
+        path: '/reset'
+    });
+}
+
+exports.postResetPassword = (req, res, next) => {
+    crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+            console.log(err)
+            return res.redirect('/reset')
+        }
+        const token = buffer.toString('hex');
+        User.findOne({ email: req.body.email }).then(user => {
+            if (!user) {
+                req.flash('error', 'No User Found')
+                return res.redirect('/reset')
+            }
+            user.resetToken = token;
+            user.tokenExpiry = Date.now() + 3600000
+            return user.save()
+        }).then(result => {
+            resetMail({ token, email: req.body.email })
+            res.redirect('/login')
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+}
+
+exports.getNewPassword = (req, res, next) => {
+    User.findOne({ resetToken: req.params.token, tokenExpiry: { $gt: Date.now() } })
+        .then(user => {
+            res.status(200).render('auth/new-password', {
+                title: 'New Password',
+                path: '/new-password',
+                userId: user._id.toString(),
+                token: req.params.token
+            });
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
+
+exports.postNewPassword = (req, res, next) => {
+    const { userId, password, token } = req.body
+    User.findOne({_id: userId, resetToken: token, tokenExpiry: { $gt: Date.now() } })
+        .then(user => {
+            if (!user) {
+                req.flash('error', 'User Not Found')
+                return res.redirect('/reset')
+            }
+            return bcrypt.hash(password, 12).then(hashedPassword => {
+                user.password = hashedPassword,
+                    user.resetToken = undefined,
+                    user.tokenExpiry = undefined
+                return user.save()
+            })
+        }).then(result => {
+            req.flash('success', 'password successfully reset')
+            res.redirect('/login')
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
+
 exports.logout = (req, res, next) => {
     req.session.destroy(() => {
-        req.flash('success', 'Logged Out')
         res.redirect('/')
     })
 }

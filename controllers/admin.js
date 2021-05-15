@@ -18,7 +18,7 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-	Product.find().
+	Product.find({user: req.user._id}).
 		// select('title price imageUrl -_id').
 		// populate('userId').  
 		then((products) => {
@@ -38,8 +38,11 @@ exports.getEditProduct = (req, res, next) => {
 	if (!editMode) {
 		return res.redirect('/');
 	}
-	Product.findById(req.params.id)
+	Product.findOne({_id: req.params.id, user: req.user._id})
 		.then(product => {
+			if(!product){
+				return res.redirect('/admin/products')
+			}
 			res.status(200).render('admin/edit-product', {
 				title: 'Edit Product',
 				path: '/admin/edit-product',
@@ -52,7 +55,7 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-	Product.findByIdAndUpdate(req.body.id, { ...req.body }).then(result => {
+	Product.findOneAndUpdate({_id: req.body.id, user: req.user._id}, { ...req.body }).then(result => {
 		res.redirect('/admin/products');
 	}).catch(err => {
 		console.log(err)
@@ -60,7 +63,7 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 exports.deleteProduct = (req, res, next) => {
-	Product.findByIdAndDelete(req.body.id).then(result => {
+	Product.findOneAndDelete({_id: req.body.id, user: req.user._id}).then(result => {
 		res.redirect('/admin/products');
 	}).catch(err => {
 		console.log(err)
