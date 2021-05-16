@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const adminController = require('../controllers/admin');
+const validator = require('../middleware/inputValidator');
 const isAuthenticated = require('../middleware/isAuthenticated');
 
 router
 	.route('/add-product')
 	.get(isAuthenticated, adminController.getAddProduct)
-	.post(isAuthenticated, adminController.postAddProduct);
+	.post(isAuthenticated, validator.product(), adminController.postAddProduct);
 
 router
 	.route('/products')
@@ -15,7 +16,7 @@ router
 
 router.route('/edit-product/:id').get(isAuthenticated, adminController.getEditProduct)
 
-router.route('/edit-product').post(isAuthenticated, adminController.postEditProduct)
+router.route('/edit-product').post(isAuthenticated, validator.product(), adminController.postEditProduct)
 
 router.route('/delete-product').post(isAuthenticated, adminController.deleteProduct)
 

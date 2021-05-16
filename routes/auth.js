@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authController = require('../controllers/auth')
 const isAuthenticated = require('../middleware/isAuthenticated');
+const validator = require('../middleware/inputValidator');
 
 router.route('/login')
 .get(authController.getLoginForm)
@@ -13,7 +14,7 @@ router.route('/logout')
 
 router.route('/signup')
 .get(authController.getSignUp)
-.post(authController.postSignUp)
+.post(validator.user(), authController.postSignUp)
 
 router.route('/reset')
 .get(authController.getResetPassword)

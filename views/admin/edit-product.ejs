@@ -7,25 +7,34 @@
     <%- include('../partials/navigation.ejs') %>
 
     <main>
+        <%- include('../partials/flash-messages.ejs') %>
         <form class="product-form" action="/admin/<%= editing ? 'edit-product': 'add-product' %>" method="POST">
             <div class="form-control">
                 <label for="title">Title</label>
-                <input type="text" name="title" id="title" value="<%= editing ? product.title: '' %>">
+                <input
+                class="<%= errors.find(err => err.param === 'title') ? 'invalid' : '' %>"
+                type="text" name="title" id="title" value="<%= product?.title || '' %>">
             </div>
 			
 			<div class="form-control">
                 <label for="imageUrl">Image Url</label>
-                <input type="text" name="imageUrl" id="imageUrl" value="<%= editing ? product.imageUrl : '' %>">
+                <input 
+                class="<%= errors.find(err => err.param === 'imageUrl') ? 'invalid' : '' %>"
+                type="text" name="imageUrl" id="imageUrl" value="<%= product?.imageUrl || '' %>">
             </div>
 			
 			<div class="form-control">
                 <label for="price">Price</label>
-                <input type="number" name="price" id="price" step="0.01" value="<%= editing ? product.price : '' %>">
+                <input
+                class="<%= errors.find(err => err.param === 'price') ? 'invalid' : '' %>"
+                type="number" name="price" id="price" step="0.01" value="<%= product?.price || '' %>">
             </div>
 			
 			<div class="form-control">
                 <label for="description">Description</label>
-				<textarea name="description" id="description" rows="5"><%= editing ? product.description : ''%></textarea>
+				<textarea 
+                class="<%= errors.find(err => err.param === 'description') ? 'invalid' : '' %>"
+                name="description" id="description" rows="5"><%= product?.description || ''%></textarea>
             </div> 
 			<% if(editing){ %>
 				<input type="hidden" name="id" value="<%= product._id %>">
