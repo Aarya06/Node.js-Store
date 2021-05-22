@@ -30,12 +30,14 @@ exports.postAddProduct = (req, res, next) => {
 		then(result => {
 			res.redirect('/');
 		}).catch(err => {
-			console.log(err);
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error)
 		});
 };
 
 exports.getProducts = (req, res, next) => {
-	Product.find({user: req.user._id}).
+	Product.find({ user: req.user._id }).
 		// select('title price imageUrl -_id').
 		// populate('userId').  
 		then((products) => {
@@ -46,7 +48,9 @@ exports.getProducts = (req, res, next) => {
 				path: '/admin/products'
 			});
 		}).catch(err => {
-			console.log(err)
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error)
 		});
 };
 
@@ -55,9 +59,9 @@ exports.getEditProduct = (req, res, next) => {
 	if (!editMode) {
 		return res.redirect('/');
 	}
-	Product.findOne({_id: req.params.id, user: req.user._id})
+	Product.findOne({ _id: req.params.id, user: req.user._id })
 		.then(product => {
-			if(!product){
+			if (!product) {
 				return res.redirect('/admin/products')
 			}
 			res.status(200).render('admin/edit-product', {
@@ -68,7 +72,9 @@ exports.getEditProduct = (req, res, next) => {
 				errors: []
 			});
 		}).catch(err => {
-			console.log(err);
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error)
 		});
 };
 
@@ -86,17 +92,21 @@ exports.postEditProduct = (req, res, next) => {
 			errors: error.array()
 		});
 	}
-	Product.findOneAndUpdate({_id: req.body.id, user: req.user._id}, { ...req.body }).then(result => {
+	Product.findOneAndUpdate({ _id: req.body.id, user: req.user._id }, { ...req.body }).then(result => {
 		res.redirect('/admin/products');
 	}).catch(err => {
-		console.log(err)
+		const error = new Error(err);
+		error.httpStatusCode = 500;
+		return next(error)
 	})
 }
 
 exports.deleteProduct = (req, res, next) => {
-	Product.findOneAndDelete({_id: req.body.id, user: req.user._id}).then(result => {
+	Product.findOneAndDelete({ _id: req.body.id, user: req.user._id }).then(result => {
 		res.redirect('/admin/products');
 	}).catch(err => {
-		console.log(err)
+		const error = new Error(err);
+		error.httpStatusCode = 500;
+		return next(error)
 	});
 }

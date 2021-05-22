@@ -38,14 +38,18 @@ exports.postLogin = (req, res, next) => {
                 req.session.isLoggedIn = true;
                 req.session.save(err => {
                     if (err) {
-                        console.log(err)
+                        const error = new Error(err);
+                        error.httpStatusCode = 500;
+                        return next(error)
                     }
                     req.flash('success', 'Welcome')
                     return res.redirect('/')
                 })
             })
     }).catch(err => {
-        console.log(err)
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error)
     })
 }
 
@@ -79,7 +83,9 @@ exports.postSignUp = (req, res, next) => {
                     return signupMail(email)
                 })
         }).catch(err => {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error)
         })
 }
 
@@ -93,7 +99,9 @@ exports.getResetPassword = (req, res, next) => {
 exports.postResetPassword = (req, res, next) => {
     crypto.randomBytes(32, (err, buffer) => {
         if (err) {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error)
             return res.redirect('/reset')
         }
         const token = buffer.toString('hex');
@@ -109,7 +117,9 @@ exports.postResetPassword = (req, res, next) => {
             resetMail({ token, email: req.body.email })
             res.redirect('/login')
         }).catch(err => {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error)
         })
     })
 }
@@ -125,13 +135,15 @@ exports.getNewPassword = (req, res, next) => {
             });
         })
         .catch(err => {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error)
         })
 }
 
 exports.postNewPassword = (req, res, next) => {
     const { userId, password, token } = req.body
-    User.findOne({_id: userId, resetToken: token, tokenExpiry: { $gt: Date.now() } })
+    User.findOne({ _id: userId, resetToken: token, tokenExpiry: { $gt: Date.now() } })
         .then(user => {
             if (!user) {
                 req.flash('error', 'User Not Found')
@@ -148,7 +160,9 @@ exports.postNewPassword = (req, res, next) => {
             res.redirect('/login')
         })
         .catch(err => {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error)
         })
 }
 
