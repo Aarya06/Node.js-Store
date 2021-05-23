@@ -32,8 +32,6 @@ exports.product = () => [
         .trim()
         .isString()
         .isLength({min: 3}),
-    body('imageUrl', 'Invalid Image Url')
-        .isURL(),
     body('price', 'Invalid product Price')
         .trim()
         .isCurrency(),

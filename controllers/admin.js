@@ -13,20 +13,30 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-	const { title, imageUrl, price, description } = req.body;
+	const { title, price, description } = req.body;
 	const error = validationResult(req);
 	if (!error.isEmpty()) {
-		console.log(error.array())
 		return res.status(422).render('admin/edit-product', {
 			title: 'Add Product',
 			path: '/admin/add-product',
 			editing: false,
-			product: { title, imageUrl, price, description },
+			product: { title, price, description },
 			errorMsg: error.array()[0].msg,
 			errors: error.array()
 		});
 	}
-	Product.create({ ...req.body, user: req.user }).
+	if (!req.file) {
+		return res.status(422).render('admin/edit-product', {
+			title: 'Add Product',
+			path: '/admin/add-product',
+			editing: false,
+			product: { title, price, description },
+			errorMsg: 'Invalid Image',
+			errors: []
+		});
+	}
+	const newProd = {title, price, description, imageUrl: `/${req.file.path}`}
+	Product.create({ ...newProd, user: req.user }).
 		then(result => {
 			res.redirect('/');
 		}).catch(err => {
@@ -64,6 +74,7 @@ exports.getEditProduct = (req, res, next) => {
 			if (!product) {
 				return res.redirect('/admin/products')
 			}
+			delete(product.imageUrl);
 			res.status(200).render('admin/edit-product', {
 				title: 'Edit Product',
 				path: '/admin/edit-product',
@@ -79,10 +90,9 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-	const { id, title, imageUrl, price, description } = req.body;
+	const { id, title, price, description } = req.body;
 	const error = validationResult(req);
 	if (!error.isEmpty()) {
-		console.log(error.array())
 		return res.status(200).render('admin/edit-product', {
 			title: 'Edit Product',
 			path: '/admin/edit-product',
@@ -92,7 +102,11 @@ exports.postEditProduct = (req, res, next) => {
 			errors: error.array()
 		});
 	}
-	Product.findOneAndUpdate({ _id: req.body.id, user: req.user._id }, { ...req.body }).then(result => {
+	const prod = { id, title, price, description }
+	if(req.file){
+		prod.imageUrl = `/${req.file.path}`
+	}
+	Product.findOneAndUpdate({ _id: req.body.id, user: req.user._id }, { ...prod }).then(result => {
 		res.redirect('/admin/products');
 	}).catch(err => {
 		const error = new Error(err);
