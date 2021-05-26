@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
-
 const Product = require('../models/product');
+const { deleteFile } = require('../utils/fileHelper');
 
 exports.getAddProduct = (req, res, next) => {
 	res.status(200).render('admin/edit-product', {
@@ -38,6 +38,7 @@ exports.postAddProduct = (req, res, next) => {
 	const newProd = {title, price, description, imageUrl: `/${req.file.path}`}
 	Product.create({ ...newProd, user: req.user }).
 		then(result => {
+			req.flash('success', 'Product Created')
 			res.redirect('/');
 		}).catch(err => {
 			const error = new Error(err);
@@ -102,12 +103,22 @@ exports.postEditProduct = (req, res, next) => {
 			errors: error.array()
 		});
 	}
-	const prod = { id, title, price, description }
-	if(req.file){
-		prod.imageUrl = `/${req.file.path}`
-	}
-	Product.findOneAndUpdate({ _id: req.body.id, user: req.user._id }, { ...prod }).then(result => {
-		res.redirect('/admin/products');
+	Product.findOne({ _id: req.body.id, user: req.user._id }).then(product => {
+		if(!product){
+			req.flash('error', 'Product does not exist')
+			return res.redirect('/admin/products')
+		}
+		if(req.file){
+			deleteFile(product.imageUrl)
+			product.imageUrl = `/${req.file.path}`
+		}
+		product.title = title;
+		product.price = price;
+		product.description = description;
+		return product.save().then(result => {
+			req.flash('success', 'Product updated')
+			res.redirect('/admin/products');
+		})
 	}).catch(err => {
 		const error = new Error(err);
 		error.httpStatusCode = 500;
@@ -116,7 +127,15 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 exports.deleteProduct = (req, res, next) => {
-	Product.findOneAndDelete({ _id: req.body.id, user: req.user._id }).then(result => {
+	Product.findOne({ _id: req.body.id, user: req.user._id }).then(product => {
+		if(!product){
+			req.flash('error', 'Product does not exist')
+			return res.redirect('/admin/products')
+		}
+		deleteFile(product.imageUrl)
+		return Product.deleteOne({ _id: req.body.id, user: req.user._id })
+	}).then(result => {
+		req.flash('success', 'Product deleted')
 		res.redirect('/admin/products');
 	}).catch(err => {
 		const error = new Error(err);

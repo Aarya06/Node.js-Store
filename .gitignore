@@ -103,6 +103,8 @@ dist
 # TernJS port file
 .tern-port
 
-# Data in images folder
-images/*
-!images/.gitkeep
+# Data in data folder
+data/images/*
+!data/images/.gitkeep
+data/invoices/*
+!data/invoices/.gitkeep

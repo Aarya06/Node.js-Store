@@ -5,7 +5,7 @@ const mongoStore = require('connect-mongodb-session')(session)
 const csrf = require('csurf');
 const flash = require('connect-flash');
 
-const { PORT, SESSION_URI } = require('./config/env.config');
+const { PORT, SESSION_URI, SESSION_SECRET } = require('./config/env.config');
 const mongoConnect = require('./config/mongo.config');
 const multer = require('./config/multer.config');
 
@@ -29,9 +29,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(multer)
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/data/images', express.static(path.join(__dirname, 'data', 'images')));
 app.use(session({
-	secret: 'my secret',
+	secret: SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,
 	store
