@@ -30,8 +30,8 @@
                 
             </article>
 				<% }) %>
-            
         </div>
+        <%- include('../partials/pagination.ejs', {first, prev, current, next, last}) %>
 		<% } else { %>
 			<h1>No Products</h1>
 		<% } %>

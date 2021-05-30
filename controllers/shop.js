@@ -4,36 +4,45 @@ const path = require('path');
 const fs = require('fs');
 const pdfDocument = require('pdfkit');
 
-exports.getHome = (req, res, next) => {
-	Product.find().then(
-		(products) => {
-			res.status(200).render('shop/index', {
-				products: products,
-				title: 'Shop',
-				hasProduct: products.length > 0,
-				path: '/'
-			});
-		}
-	).catch(err => {
-		const error = new Error(err);
-		error.httpStatusCode = 500;
-		return next(error)
-	});
-};
-
 exports.getAllProducts = (req, res, next) => {
-	Product.find().then((products) => {
-		res.status(200).render('shop/product-list', {
-			products: products,
-			title: 'Products',
-			hasProduct: products.length > 0,
-			path: '/products'
+	const page = req?.query?.page ? parseInt(req.query.page) : 1;
+	const size = req?.query?.size ? parseInt(req.query.size) : 2;
+	const skip = page > 1 ? (page - 1) * size : 0;
+	Product.find().countDocuments().then(totalItems => {
+		// const isLast = (page * size) >= totalItems;
+		// const isFirst = page == 1;
+		const last = Math.ceil(totalItems / size);
+		const first = 1;
+		const next = (page + 1) >= last ? last : page + 1;
+		const prev = (page - 1) <= first ? first : page - 1;
+		const current = page;
+		Product.find().
+			skip(skip).
+			limit(size).
+			then((products) => {
+				const renderPage = req.path === '/' ? 'shop/index': 'shop/product-list';
+				const title = req.path === '/' ? 'Shop' : 'Products';
+				res.status(200).render(renderPage, {
+					products: products,
+					title,
+					hasProduct: products.length > 0,
+					path: req.path,
+					totalItems,
+					// isLast,
+					// isFirst,
+					next,
+					prev,
+					last,
+					first,
+					current
+				});
+			})
+	})
+		.catch(err => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error)
 		});
-	}).catch(err => {
-		const error = new Error(err);
-		error.httpStatusCode = 500;
-		return next(error)
-	});
 };
 
 exports.getProduct = (req, res, next) => {
@@ -148,7 +157,7 @@ exports.getInvoice = (req, res, next) => {
 		pdfDoc.fontSize(16).text('---------------------------------------------------------------------------------------')
 		order.products.forEach((product, i) => {
 			total = total + (product.product.price * product.qty)
-			pdfDoc.text(`${i+1}. ${product.product.title} --> ${product.product.price} X ${product.qty} = ${product.product.price * product.qty}`)
+			pdfDoc.text(`${i + 1}. ${product.product.title} --> ${product.product.price} X ${product.qty} = ${product.product.price * product.qty}`)
 		})
 		pdfDoc.text('---------------------------------------------------------------------------------------')
 		pdfDoc.fontSize(20).text(`Total = ${total}`)

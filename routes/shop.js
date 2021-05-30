@@ -4,7 +4,7 @@ const router = express.Router();
 const shopController = require('../controllers/shop');
 const isAuthenticated = require('../middleware/isAuthenticated');
 
-router.route('/').get(shopController.getHome);
+router.route('/').get(shopController.getAllProducts);
 
 router.route('/products').get(shopController.getAllProducts);
 

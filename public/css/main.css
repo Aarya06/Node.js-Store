@@ -252,6 +252,26 @@ form {
   color: green;
 }
 
+.pagination {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.pagination a {
+  padding: 0.5rem;
+  margin: 0 1rem;
+  border: 1px solid #00695c;
+  color: #00695c;
+  text-decoration: none;
+}
+
+.pagination a:hover, 
+.pagination a:active,
+.pagination a.active {
+  background-color:  #00695c;
+  color: #fff;
+}
+
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;
