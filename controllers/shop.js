@@ -88,13 +88,6 @@ exports.addToCart = async (req, res, next) => {
 	})
 };
 
-exports.getCheckout = (req, res, next) => {
-	res.status(200).render('shop/checkout', {
-		title: 'Checkout',
-		path: '/checkout'
-	});
-};
-
 exports.getOrders = (req, res, next) => {
 	Order.find({ user: req.user._id }).then(orders => {
 		res.status(200).render('shop/orders', {

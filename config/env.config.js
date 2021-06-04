@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 module.exports = {
-  PORT: process.env.PORT,
+  PORT: process.env.PORT || 3000,
   MONGO_URI: process.env.MONGO_URI,
   SESSION_URI: process.env.SESSION_URI,
   SEND_GRID_API_KEY: process.env.SEND_GRID_API_KEY,

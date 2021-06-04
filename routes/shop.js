@@ -14,8 +14,6 @@ router.route('/cart')
 .get(isAuthenticated, shopController.getCart)
 .post(isAuthenticated, shopController.addToCart);
 
-router.route('/checkout').get(isAuthenticated, shopController.getCheckout);
-
 router.route('/orders').
 get(isAuthenticated, shopController.getOrders).
 post(isAuthenticated, shopController.placeOrder);

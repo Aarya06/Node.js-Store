@@ -1,4 +1,20 @@
-# Node.js-Project - BookStore
+# Node.js-Project - Store
+Its a simple store that have basic CRUD operations with cart and order feature.
+
+## Topics Covered
+
+* Basics of Node.js
+* Node with Express.js
+* EJS Templating engine
+* Routes and Modals
+* Mongo-db with mongoose
+* Sessions & Cookies
+* Authentication
+* Sending Emails
+* Input Validation & Error handling
+* File upload & download
+* Pagination
+* Async Requests
 
 ## How to run the Project
 

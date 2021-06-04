@@ -18,6 +18,6 @@ router.route('/edit-product/:id').get(isAuthenticated, adminController.getEditPr
 
 router.route('/edit-product').post(isAuthenticated, validator.product(), adminController.postEditProduct)
 
-router.route('/delete-product').post(isAuthenticated, adminController.deleteProduct)
+router.route('/product/:id').delete(isAuthenticated, adminController.deleteProduct)
 
 module.exports = router;

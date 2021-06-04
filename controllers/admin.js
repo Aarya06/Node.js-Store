@@ -127,19 +127,16 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 exports.deleteProduct = (req, res, next) => {
-	Product.findOne({ _id: req.body.id, user: req.user._id }).then(product => {
+	Product.findOne({ _id: req.params.id, user: req.user._id }).then(product => {
 		if(!product){
 			req.flash('error', 'Product does not exist')
 			return res.redirect('/admin/products')
 		}
 		deleteFile(product.imageUrl)
-		return Product.deleteOne({ _id: req.body.id, user: req.user._id })
+		return Product.deleteOne({ _id: req.params.id, user: req.user._id })
 	}).then(result => {
-		req.flash('success', 'Product deleted')
-		res.redirect('/admin/products');
+		res.status(200).json({message: 'success'});
 	}).catch(err => {
-		const error = new Error(err);
-		error.httpStatusCode = 500;
-		return next(error)
+		res.status(500).json({message: 'error'});
 	});
 }
